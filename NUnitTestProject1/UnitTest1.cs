@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NUnitTestProject1
 {
+    [TestFixture]
     public class Tests
     {
         public IClass1 FakeClass1 { get; set; }
@@ -186,7 +187,7 @@ namespace NUnitTestProject1
         };
     }
 
-    public class Class1ForTest : Class1
+    public partial class Class1ForTest : Class1
     {
         public IClass1 FakeClass1 { get; set; }
         public Class1ForTest(IClass1 fakeClass1)

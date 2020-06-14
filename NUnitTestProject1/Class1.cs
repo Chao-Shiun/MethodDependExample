@@ -11,7 +11,7 @@ namespace NUnitTestProject1
             var order = new Order
             {
                 UserId = paymentInfo.UserId,
-                OrderId = Guid.NewGuid().ToString()
+                OrderId = CreateOrderId()
             };
             var orderDetail = paymentInfo.Detail.Select(item => ProcessOrderDetail(order.OrderId, item)).ToList();
             order.OrderAmount = orderDetail.Sum(x => x.Amount);
@@ -30,6 +30,11 @@ namespace NUnitTestProject1
             };
             //Do many something
             return orderDetail;
+        }
+
+        protected virtual string CreateOrderId()
+        {
+            return Guid.NewGuid().ToString();
         }
 
         protected virtual ProductInfo GetProductInfo(int productId)
@@ -78,7 +83,6 @@ namespace NUnitTestProject1
         public int ProdId { get; set; }
         public int Count { get; set; }
     }
-
 
     public class Order
     {
