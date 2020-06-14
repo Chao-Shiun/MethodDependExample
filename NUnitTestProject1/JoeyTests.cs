@@ -8,60 +8,50 @@ namespace NUnitTestProject1
     [TestFixture]
     public class JoeyTests
     {
+        private const string DefaultOrderId = "5487";
+        private const int DefaultUserId = 999;
         private MyFakeClass1 _class1;
 
         [SetUp]
         public void SetUp()
         {
             _class1 = new MyFakeClass1();
+            _class1.OrderId = DefaultOrderId;
         }
 
         [Test]
         public void get_order_detail_by_product_id()
         {
-            _class1.AddProduct(new ProductInfo()
+            GivenProductInfos(new ProductInfo()
             {
                 Price = 100,
                 ProductId = 91
             });
 
-            var orderDetail = _class1.ProcessOrderDetail("123", new PaymentDetail
+            var orderDetail = _class1.ProcessOrderDetail(DefaultOrderId, new PaymentDetail
             {
                 Count = 10,
                 ProdId = 91
             });
 
-            var expected = new OrderDetail
+            OrderDetailShouldBe(new OrderDetail
             {
                 Amount = 1000,
-                OrderId = "123",
+                OrderId = DefaultOrderId,
                 ProductId = 91
-            };
-
-            expected.ToExpectedObject().ShouldMatch(orderDetail);
+            }, orderDetail);
         }
 
         [Test]
         public void get_order_with_amount_and_order_details()
         {
-            var class1 = new MyFakeClass1();
-            class1.OrderId = "5487";
+            GivenProductInfos(
+                CreateProductInfo(100, 91),
+                CreateProductInfo(200, 92));
 
-            class1.AddProduct(new ProductInfo()
+            var (order, orderDetailList) = _class1.ProcessOrder(new PaymentInfo
             {
-                Price = 100,
-                ProductId = 91
-            });
-
-            class1.AddProduct(new ProductInfo()
-            {
-                Price = 200,
-                ProductId = 92
-            });
-
-            var (order, orderDetailList) = class1.ProcessOrder(new PaymentInfo
-            {
-                UserId = 999,
+                UserId = DefaultUserId,
                 Detail = new List<PaymentDetail>
                 {
                     new PaymentDetail {Count = 10, ProdId = 91},
@@ -69,16 +59,50 @@ namespace NUnitTestProject1
                 }
             });
 
-            var expectedOrder = new Order() {OrderAmount = 5000, OrderId = "5487", UserId = 999};
-
-            expectedOrder.ToExpectedObject().ShouldMatch(order);
-
-            var expectedOrderDetails = new List<OrderDetail>
+            OrderShouldBe(new Order
             {
-                new OrderDetail() {Amount = 1000, OrderId = "5487", ProductId = 91},
-                new OrderDetail() {Amount = 4000, OrderId = "5487", ProductId = 92},
+                OrderAmount = 5000,
+                OrderId = DefaultOrderId,
+                UserId = DefaultUserId
+            }, order);
+
+            OrderDetailsShouldBe(new List<OrderDetail>
+            {
+                new OrderDetail() {Amount = 1000, OrderId = DefaultOrderId, ProductId = 91},
+                new OrderDetail() {Amount = 4000, OrderId = DefaultOrderId, ProductId = 92},
+            }, orderDetailList);
+        }
+
+        private static ProductInfo CreateProductInfo(int price, int productId)
+        {
+            return new ProductInfo()
+            {
+                Price = price,
+                ProductId = productId
             };
-            expectedOrderDetails.ToExpectedObject().ShouldMatch(orderDetailList);
+        }
+
+        private static void OrderDetailShouldBe(OrderDetail expected, OrderDetail orderDetail)
+        {
+            expected.ToExpectedObject().ShouldMatch(orderDetail);
+        }
+
+        private static void OrderDetailsShouldBe(List<OrderDetail> expected, List<OrderDetail> orderDetailList)
+        {
+            expected.ToExpectedObject().ShouldMatch(orderDetailList);
+        }
+
+        private static void OrderShouldBe(Order expectedOrder, Order order)
+        {
+            expectedOrder.ToExpectedObject().ShouldMatch(order);
+        }
+
+        private void GivenProductInfos(params ProductInfo[] productInfos)
+        {
+            foreach (var productInfo in productInfos)
+            {
+                _class1.AddProduct(productInfo);
+            }
         }
     }
 

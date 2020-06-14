@@ -18,11 +18,6 @@ namespace NUnitTestProject1
             return (order, orderDetail);
         }
 
-        protected virtual string CreateOrderId()
-        {
-            return Guid.NewGuid().ToString();
-        }
-
         public virtual OrderDetail ProcessOrderDetail(string orderId, PaymentDetail paymentDetailInfo)
         {
             //Do many something
@@ -35,6 +30,11 @@ namespace NUnitTestProject1
             };
             //Do many something
             return orderDetail;
+        }
+
+        protected virtual string CreateOrderId()
+        {
+            return Guid.NewGuid().ToString();
         }
 
         protected virtual ProductInfo GetProductInfo(int productId)
@@ -83,7 +83,6 @@ namespace NUnitTestProject1
         public int ProdId { get; set; }
         public int Count { get; set; }
     }
-
 
     public class Order
     {
