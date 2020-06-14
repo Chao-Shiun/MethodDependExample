@@ -11,11 +11,16 @@ namespace NUnitTestProject1
             var order = new Order
             {
                 UserId = paymentInfo.UserId,
-                OrderId = Guid.NewGuid().ToString()
+                OrderId = CreateOrderId()
             };
             var orderDetail = paymentInfo.Detail.Select(item => ProcessOrderDetail(order.OrderId, item)).ToList();
             order.OrderAmount = orderDetail.Sum(x => x.Amount);
             return (order, orderDetail);
+        }
+
+        protected virtual string CreateOrderId()
+        {
+            return Guid.NewGuid().ToString();
         }
 
         public virtual OrderDetail ProcessOrderDetail(string orderId, PaymentDetail paymentDetailInfo)
